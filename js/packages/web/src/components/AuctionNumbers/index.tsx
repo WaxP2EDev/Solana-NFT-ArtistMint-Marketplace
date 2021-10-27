@@ -50,13 +50,13 @@ export const AuctionNumbers = (props: { auctionView: AuctionView }) => {
   return (
     <div style={{ minWidth: 350 }}>
       <Row>
-        {(!ended || auctionView.isInstantSale) && (
+        {!ended && (
           <Col span={12}>
             {(isUpcoming || bids.length === 0) && (
               <AmountLabel
                 style={{ marginBottom: 10 }}
                 containerStyle={{ flexDirection: 'column' }}
-                title={auctionView.isInstantSale ? 'Price' : 'Starting bid'}
+                title="Starting bid"
                 amount={fromLamports(
                   participationOnly ? participationFixedPrice : priceFloor,
                   mintInfo,
@@ -74,9 +74,9 @@ export const AuctionNumbers = (props: { auctionView: AuctionView }) => {
           </Col>
         )}
 
-        {!ended && <Col span={ended ? 24 : 12}>
-          <Countdown state={state}/>
-        </Col>}
+        <Col span={ended ? 24 : 12}>
+          <Countdown state={state} />
+        </Col>
       </Row>
     </div>
   );
@@ -105,34 +105,34 @@ const Countdown = ({ state }: { state?: CountdownState }) => {
           {state &&
             (isEnded(state) ? (
               <Row style={{ width: '100%' }}>
-                <div className="cd-number">This auction has ended</div>
+                <div className="cd-number auctionNumber-color">This auction has ended</div>
               </Row>
             ) : (
               <Row style={{ width: '100%', flexWrap: 'nowrap' }}>
                 {state && state.days > 0 && (
                   <Col>
-                    <div className="cd-number">
+                    <div className="cd-number auctionNumber-color">
                       {state.days < 10 && (
                         <span style={{ opacity: 0.2 }}>0</span>
                       )}
                       {state.days}
                       <span style={{ opacity: 0.2 }}>:</span>
                     </div>
-                    <div className="cd-label">days</div>
+                    <div className="cd-label auctionNumber-color">days</div>
                   </Col>
                 )}
                 <Col>
-                  <div className="cd-number">
+                  <div className="cd-number auctionNumber-color">
                     {state.hours < 10 && (
                       <span style={{ opacity: 0.2 }}>0</span>
                     )}
                     {state.hours}
                     <span style={{ opacity: 0.2 }}>:</span>
                   </div>
-                  <div className="cd-label">hour</div>
+                  <div className="cd-label auctionNumber-color">hour</div>
                 </Col>
                 <Col>
-                  <div className="cd-number">
+                  <div className="cd-number auctionNumber-color">
                     {state.minutes < 10 && (
                       <span style={{ opacity: 0.2 }}>0</span>
                     )}
@@ -141,17 +141,17 @@ const Countdown = ({ state }: { state?: CountdownState }) => {
                       <span style={{ opacity: 0.2 }}>:</span>
                     )}
                   </div>
-                  <div className="cd-label">mins</div>
+                  <div className="cd-label auctionNumber-color">mins</div>
                 </Col>
                 {!state.days && (
                   <Col>
-                    <div className="cd-number">
+                    <div className="cd-number auctionNumber-color">
                       {state.seconds < 10 && (
                         <span style={{ opacity: 0.2 }}>0</span>
                       )}
                       {state.seconds}
                     </div>
-                    <div className="cd-label">secs</div>
+                    <div className="cd-label auctionNumber-color">secs</div>
                   </Col>
                 )}
               </Row>

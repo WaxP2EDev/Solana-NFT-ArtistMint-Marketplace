@@ -19,28 +19,30 @@ export const ArtistsView = () => {
   const items = Object.values(whitelistedCreatorsByCreator);
 
   const artistGrid = (
-    <Masonry
-      breakpointCols={breakpointColumnsObj}
-      className="my-masonry-grid"
-      columnClassName="my-masonry-grid_column"
-    >
-      {items.map((m, idx) => {
-        const id = m.info.address;
-        return (
-          <Link to={`/artists/${id}`} key={idx}>
-            <ArtistCard
-              key={id}
-              artist={{
-                address: m.info.address,
-                name: m.info.name || '',
-                image: m.info.image || '',
-                link: m.info.twitter || '',
-              }}
-            />
-          </Link>
-        );
-      })}
-    </Masonry>
+    <div style={{padding: 30}}>
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        className="my-masonry-grid"
+        columnClassName="my-masonry-grid_column"
+      >
+        {items.map((m, idx) => {
+          const id = m.info.address;
+          return (
+            <Link to={`/artists/${id}`} key={idx}>
+              <ArtistCard
+                key={id}
+                artist={{
+                  address: m.info.address,
+                  name: m.info.name || '',
+                  image: m.info.image || '',
+                  link: m.info.twitter || '',
+                }}
+              />
+            </Link>
+          );
+        })}
+      </Masonry>
+    </div>
   );
 
   return (

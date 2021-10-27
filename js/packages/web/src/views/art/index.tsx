@@ -10,6 +10,7 @@ import {
   List,
   Card,
 } from 'antd';
+import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useArt, useExtendedArt } from '../../hooks';
 
@@ -96,14 +97,14 @@ export const ArtView = () => {
             style={{ textAlign: 'left', fontSize: '1.4rem' }}
           >
             <Row>
-              <div style={{ fontWeight: 700, fontSize: '4rem' }}>
+              <div className="art-text-color" style={{ fontWeight: 700, fontSize: '4rem' }}>
                 {art.title || <Skeleton paragraph={{ rows: 0 }} />}
               </div>
             </Row>
             <Row>
               <Col span={6}>
-                <h6>Royalties</h6>
-                <div className="royalties">
+                <h6 className="art-text-color">Royalties</h6>
+                <div className="royalties art-text-color">
                   {((art.seller_fee_basis_points || 0) / 100).toFixed(2)}%
                 </div>
               </Col>
@@ -113,8 +114,8 @@ export const ArtView = () => {
             </Row>
             <Row>
               <Col>
-                <h6 style={{ marginTop: 5 }}>Created By</h6>
-                <div className="creators">
+                <h6 className="art-text-color" style={{ marginTop: 5 }}>Created By</h6>
+                <div className="creators art-text-color">
                   {(art.creators || []).map((creator, idx) => {
                     return (
                       <div
@@ -127,7 +128,7 @@ export const ArtView = () => {
                       >
                         <MetaAvatar creators={[creator]} size={64} />
                         <div>
-                          <span className="creator-name">
+                          <span className="creator-name art-text-color">
                             {creator.name ||
                               shortenAddress(creator.address || '')}
                           </span>
@@ -164,11 +165,42 @@ export const ArtView = () => {
             </Row>
             <Row>
               <Col>
-                <h6 style={{ marginTop: 5 }}>Edition</h6>
-                <div className="art-edition">{badge}</div>
+                <h6 className="art-text-color" style={{ marginTop: 5 }}>Edition</h6>
+                <div className="art-edition art-text-color">{badge}</div>
               </Col>
             </Row>
-
+            <Row>
+              <Col>
+                <Divider />
+                {art.creators?.find(c => !c.verified) && unverified}
+                <h6 className="art-text-color">Description</h6>
+                <div className="royalties art-text-color">{description}</div>
+                <br />
+                {/*
+                  TODO: add info about artist
+                <div className="info-header">ABOUT THE CREATOR</div>
+                <div className="info-content">{art.about}</div> */}
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                {attributes && (
+                  <>
+                    <Divider />
+                    <h6 className="art-text-color">Attributes</h6>
+                    <List size="large" grid={{ column: 4 }}>
+                      {attributes.map(attribute => (
+                        <List.Item key={attribute.trait_type}>
+                          <Card className="art-text-color" title={attribute.trait_type}>
+                            {attribute.value}
+                          </Card>
+                        </List.Item>
+                      ))}
+                    </List>
+                  </>
+                )}
+              </Col>
+            </Row>
             {/* <Button
                   onClick={async () => {
                     if(!art.mint) {
@@ -196,41 +228,28 @@ export const ArtView = () => {
                 </Button> */}
 
             {/* TODO: Add conversion of MasterEditionV1 to MasterEditionV2 */}
-            <ArtMinting
-              id={id}
-              key={remountArtMinting}
-              onMint={async () => await setRemountArtMinting(prev => prev + 1)}
-            />
-          </Col>
-          <Col span="12">
-            <Divider />
-            {art.creators?.find(c => !c.verified) && unverified}
-            <br />
-            <div className="info-header">ABOUT THE CREATION</div>
-            <div className="info-content">{description}</div>
-            <br />
-            {/*
-              TODO: add info about artist
-            <div className="info-header">ABOUT THE CREATOR</div>
-            <div className="info-content">{art.about}</div> */}
-          </Col>
-          <Col span="12">
-            {attributes && (
-              <>
-                <Divider />
-                <br />
-                <div className="info-header">Attributes</div>
-                <List size="large" grid={{ column: 4 }}>
-                  {attributes.map(attribute => (
-                    <List.Item key={attribute.trait_type}>
-                      <Card title={attribute.trait_type}>
-                        {attribute.value}
-                      </Card>
-                    </List.Item>
-                  ))}
-                </List>
-              </>
-            )}
+            <Row>
+              <Col span={6}>
+                <ArtMinting
+                  id={id}
+                  key={remountArtMinting}
+                  onMint={async () => await setRemountArtMinting(prev => prev + 1)}
+                />
+              </Col>
+              <Col span={1}></Col>
+              <Col span={6}>
+                <Link to={`/auction/create`}>
+                  <button className="profile-button">Sell</button>
+                </Link>
+              </Col>
+              <Col span={1}></Col>
+              <Col span={6}>
+                <Link to={`/offer/create`}>
+                  <button className="profile-button">Make offer</button>
+                </Link>
+              </Col>
+              <Col span={4}></Col>
+            </Row>
           </Col>
         </Row>
       </Col>

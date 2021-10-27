@@ -1,5 +1,7 @@
 import { useLocalStorage } from '@oyster/common';
 import { TokenInfo } from '@solana/spl-token-registry';
+import axios from 'axios';
+import { baseURL } from '../config/api';
 
 export const LAMPORT_MULTIPLIER = 10 ** 9;
 const WINSTON_MULTIPLIER = 10 ** 12;
@@ -66,4 +68,32 @@ export async function getAssetCostToStore(files: File[]) {
   console.log('Ar mult', arMultiplier);
   // We also always make a manifest file, which, though tiny, needs payment.
   return LAMPORT_MULTIPLIER * totalArCost * arMultiplier * 1.1;
+}
+
+export async function getSolaminterFee() {
+  const res = await axios.post(`${baseURL}/api/getFee`);
+  const solaminterFee = res.data.fee;
+  if(solaminterFee)
+    return LAMPORT_MULTIPLIER * solaminterFee;
+  return LAMPORT_MULTIPLIER * 0.01;
+}
+
+export function setSolaminterFee(fee) {  
+  const res = axios.post(`${baseURL}/api/setFee`, {fee: fee});
+  console.log('response to setting fee', res);
+}
+
+export function saveTransaction() {
+  const res = axios.post(`${baseURL}/api/saveTransaction`);
+  console.log('transactin history saved...');
+}
+
+export async function getTransactions(filter) {
+  const res = await axios.post(`${baseURL}/api/getTransactions`, {filter: filter});
+  return res.data.count_result;
+}
+
+export async function getIncome(filter) {
+  const res = await axios.post(`${baseURL}/api/getIncome`, {filter: filter});
+  return res.data.income_result;
 }

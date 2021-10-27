@@ -164,7 +164,7 @@ pub mod nft_candy_machine {
                 config_line.uri,
                 Some(creators),
                 config.data.seller_fee_basis_points,
-                true,
+                false,
                 config.data.is_mutable,
             ),
             metadata_infos.as_slice(),

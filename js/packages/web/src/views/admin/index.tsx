@@ -9,7 +9,7 @@ import {
   Modal,
   Button,
   Input,
-  Divider,
+  Divider,  
 } from 'antd';
 import { useMeta } from '../../contexts';
 import {
@@ -37,8 +37,19 @@ import {
 } from '../../actions/convertMasterEditions';
 import { Link } from 'react-router-dom';
 import { SetupVariables } from '../../components/SetupVariables';
-
+import useWindowDimensions from '../../utils/layout';
+import { Line } from '@ant-design/charts';
+import {getSolaminterFee, setSolaminterFee, getIncome, getTransactions } from '../../utils/assets';
 const { Content } = Layout;
+export const LAMPORT_MULTIPLIER = 10 ** 9;
+type ChartDataType = {
+  time: string,
+  value: number
+}
+type ChartProps = {
+  title: string,
+  data: Array<ChartDataType>
+};
 export const AdminView = () => {
   const { store, whitelistedCreatorsByCreator, isLoading } = useMeta();
   const connection = useConnection();
@@ -49,6 +60,23 @@ export const AdminView = () => {
     [wallet.wallet, wallet.connect, setVisible],
   );
   const { storeAddress, setStoreForOwner, isConfigured } = useStore();
+  const { width } = useWindowDimensions();
+  const [fee, setFee] = useState('0.01');
+  const [incomeData, setIncomeData] = useState<Array<ChartDataType>>([]);
+  const [countData, setCountData] = useState<Array<ChartDataType>>([]);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
+  const showConfirmModal = () => {
+    setIsConfirmModalVisible(true);
+  }
+
+  const handleOk = () => {
+    setSolaminterFee(fee);
+    setIsConfirmModalVisible(false);
+  }
+
+  const handleCancel = () => {
+    setIsConfirmModalVisible(false);
+  }
 
   useEffect(() => {
     if (!store && !storeAddress && wallet.publicKey) {
@@ -56,9 +84,33 @@ export const AdminView = () => {
     }
   }, [store, storeAddress, wallet.publicKey]);
   console.log('@admin', wallet.connected, storeAddress, isLoading, store);
+  useEffect(() => {
+    const solFeeFunc = async () => {
+      const result = await getSolaminterFee();
+      let solFee = result / LAMPORT_MULTIPLIER;
+      setFee(solFee.toString());      
+    }        
+    solFeeFunc();    
+  },[]);
+
+  useEffect(() => {
+    const getIncomeData = async() => {
+      const result = await getIncome(null);
+      setIncomeData(result);
+    }
+    getIncomeData();
+  },[]);
+
+  useEffect(() => {
+    const getCountData = async() => {
+      const result = await getTransactions(null);
+      setCountData(result);
+    }
+    getCountData();
+  },[]);  
 
   return (
-    <>
+    <Col style={{padding: '0 10%'}}>
       {!wallet.connected ? (
         <p>
           <Button type="primary" className="app-btn" onClick={connect}>
@@ -77,7 +129,31 @@ export const AdminView = () => {
             wallet={wallet}
             connected={wallet.connected}
           />
-          {!isConfigured && (
+          <Row>
+            <Col span={width > 992 ? 12 : 24}>
+              <ChartView key={1} title="Total Fees Collected (in SOL)" data={incomeData} />
+            </Col>
+            <Col span={width > 992 ? 12 : 24}>
+              <ChartView key={2} title="Total NFTs minted" data={countData} />              
+            </Col>
+          </Row> 
+          <Row>
+            <Col style={{display: 'flex', flexDirection: 'row', justifyContent: 'left', marginTop: '40px'}}>
+              <h1 className="sol-fee-title"> Solaminter Fee:</h1>
+              <Input 
+                autoFocus
+                className="sol-fee-input"
+                value={fee}
+                onChange={(e)=> setFee(e.target.value) }
+              />
+              <h1 className="sol-fee-title">SOL</h1>
+              <Button className="sol-fee-confirm-btn" type="primary" onClick={showConfirmModal}>Confirm</Button>
+              <Modal title="Set Solaminter Fee" visible={isConfirmModalVisible} onOk={handleOk} onCancel={handleCancel}>
+                <p>Are you sure that setting Solaminter Fee as {fee} ?</p>               
+              </Modal>
+            </Col>
+          </Row>         
+          {/* {!isConfigured && (
             <>
               <Divider />
               <Divider />
@@ -90,7 +166,7 @@ export const AdminView = () => {
                 storeOwnerAddress={wallet.publicKey?.toBase58()}
               />
             </>
-          )}
+          )} */}
         </>
       ) : (
         <>
@@ -98,7 +174,7 @@ export const AdminView = () => {
           <Link to={`/`}>Go to initialize</Link>
         </>
       )}
-    </>
+    </Col>
   );
 };
 
@@ -158,7 +234,7 @@ function ArtistModal({
           onChange={e => setModalAddress(e.target.value)}
         />
       </Modal>
-      <Button onClick={() => setModalOpen(true)}>Add Creator</Button>
+      <Button style={{background: '#d976f9'}} onClick={() => setModalOpen(true)}>Add Creator</Button>
     </>
   );
 }
@@ -294,6 +370,7 @@ function InnerAdminView({
           </Col>
           <Col span={3}>
             <Switch
+              style={{background: '#768BF9'}}
               checkedChildren="Public"
               unCheckedChildren="Whitelist Only"
               checked={newStore.public}
@@ -309,7 +386,7 @@ function InnerAdminView({
         </Row>
         <Row>
           <Table
-            className="artist-whitelist-table"
+            className="artist-whitelist-table custom-whitelist-theme"
             columns={columns}
             dataSource={Object.keys(uniqueCreatorsWithUpdates).map(key => ({
               key,
@@ -324,9 +401,9 @@ function InnerAdminView({
         </Row>
       </Col>
 
-      {!store.info.public && (
+      {/* {!store.info.public && (
         <>
-          <h1>
+          <h1 style={{color: 'black'}}>
             You have {filteredMetadata?.available.length} MasterEditionV1s that
             can be converted right now and{' '}
             {filteredMetadata?.unavailable.length} still in unfinished auctions
@@ -356,7 +433,45 @@ function InnerAdminView({
             </Row>
           </Col>{' '}
         </>
-      )}
+      )} */}
     </Content>
   );
 }
+
+function ChartView({title, data} : ChartProps) {  
+
+  const config = {
+    data,
+    // width: 800,
+    // height: 400,
+    autoFit: true,
+    xField: 'time',
+    yField: 'value',
+    point: {
+      size: 8,
+      shape: 'diamond',
+    },
+    label: {
+      style: {
+        fill: '#aaa',
+      },
+    },
+  };
+
+  let chart;
+
+  // Export Image
+  const downloadImage = () => {
+    chart?.downloadImage();
+  };  
+
+  return (
+    <div>    
+      <h2 style={{color: 'black'}}> {title} </h2>  
+      <button type="button" onClick={downloadImage} style={{ marginBottom: 20, color: 'black' }}>
+        Export Image
+      </button>    
+      <Line {...config} onReady={(chartInstance) => (chart = chartInstance)} />
+    </div>
+  );
+};

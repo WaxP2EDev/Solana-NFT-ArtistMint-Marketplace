@@ -34,7 +34,6 @@ import useWindowDimensions from '../../utils/layout';
 import { CheckOutlined } from '@ant-design/icons';
 import { useMemo } from 'react';
 import { ArtType } from '../../types';
-import { ClickToCopy  } from '../../components/ClickToCopy';
 
 export const AuctionItem = ({
   item,
@@ -125,110 +124,123 @@ export const AuctionView = () => {
 
   return (
     <>
-      <Row justify="space-around" ref={ref}>
-        <Col span={24} md={12} className="pr-4">
-          <div className="auction-view" style={{ minHeight: 300 }}>
-            <Carousel
-              autoplay={false}
-              afterChange={index => setCurrentIndex(index)}
-            >
-              {items}
-            </Carousel>
-          </div>
-          <h6>Number Of Winners</h6>
-          <h1>
-            {winnerCount === undefined ? (
-              <Skeleton paragraph={{ rows: 0 }} />
-            ) : (
-              winnerCount
-            )}
-          </h1>
-          <h6>Number Of NFTs</h6>
-          <h1>
-            {nftCount === undefined ? (
-              <Skeleton paragraph={{ rows: 0 }} />
-            ) : (
-              nftCount
-            )}
-          </h1>
-          <h6>About this {nftCount === 1 ? 'NFT' : 'Collection'}</h6>
-          <div className="auction-paragraph">
-            {hasDescription && <Skeleton paragraph={{ rows: 3 }} />}
-            {description ||
-              (winnerCount !== undefined && (
-                <div style={{ fontStyle: 'italic' }}>
-                  No description provided.
-                </div>
-              ))}
-          </div>
+      <Row>
+        <br />
+        <Col span={2}></Col>
+        <Col span={20}>
+          <Row justify="space-around" ref={ref}>
+            <Col span={24} md={12} className="pr-4">
+              <div className="auction-view" style={{ minHeight: 400 }}>
+                <Row>
+                  <Col span={4}></Col>
+                  <Col span={16}>
+                  <Carousel
+                    autoplay={false}
+                    afterChange={index => setCurrentIndex(index)}
+                  >
+                    {items}
+                  </Carousel>
+                  </Col>
+                  <Col span={4}></Col>
+                </Row>
+              </div>
+              <h6 className="auction-color">Number Of Winners</h6>
+              <h1>
+                {winnerCount === undefined ? (
+                  <Skeleton paragraph={{ rows: 0 }} />
+                ) : (
+                  winnerCount
+                )}
+              </h1>
+              <h6 className="auction-color">Number Of NFTs</h6>
+              <h1>
+                {nftCount === undefined ? (
+                  <Skeleton paragraph={{ rows: 0 }} />
+                ) : (
+                  nftCount
+                )}
+              </h1>
+              <h6 className="auction-color">About this {nftCount === 1 ? 'NFT' : 'Collection'}</h6>
+              <div className="auction-paragraph">
+                {hasDescription && <Skeleton paragraph={{ rows: 3 }} />}
+                {description ||
+                  (winnerCount !== undefined && (
+                    <div style={{ fontStyle: 'italic' }}>
+                      No description provided.
+                    </div>
+                  ))}
+              </div>
 
-          {attributes && (
-            <>
-              <h6>Attributes</h6>
-              <List grid={{ column: 4 }}>
-                {attributes.map(attribute => (
-                  <List.Item>
-                    <Card title={attribute.trait_type}>{attribute.value}</Card>
-                  </List.Item>
-                ))}
-              </List>
-            </>
-          )}
-          {/* {auctionData[id] && (
-            <>
-              <h6>About this Auction</h6>
-              <p>{auctionData[id].description.split('\n').map((t: string) => <div>{t}</div>)}</p>
-            </>
-          )} */}
-        </Col>
-
-        <Col span={24} md={12}>
-          <h2 className="art-title">
-            {art.title || <Skeleton paragraph={{ rows: 0 }} />}
-          </h2>
-          <Row gutter={[50, 0]} style={{ marginRight: 'unset' }}>
-            <Col>
-              <h6>Edition</h6>
-              {!auction && (
-                <Skeleton title={{ width: '100%' }} paragraph={{ rows: 0 }} />
+              {attributes && (
+                <>
+                  <h6>Attributes</h6>
+                  <List grid={{ column: 4 }}>
+                    {attributes.map(attribute => (
+                      <List.Item>
+                        <Card title={attribute.trait_type}>{attribute.value}</Card>
+                      </List.Item>
+                    ))}
+                  </List>
+                </>
               )}
-              {auction && (
-                <p className="auction-art-edition">
-                  {(auction?.items.length || 0) > 1 ? 'Multiple' : edition}
-                </p>
-              )}
+              {/* {auctionData[id] && (
+                <>
+                  <h6>About this Auction</h6>
+                  <p>{auctionData[id].description.split('\n').map((t: string) => <div>{t}</div>)}</p>
+                </>
+              )} */}
             </Col>
 
-            <Col>
-              <h6>View on</h6>
-              <div style={{ display: 'flex' }}>
-                <Button
-                  className="tag"
-                  onClick={() => window.open(art.uri || '', '_blank')}
-                >
-                  Arweave
-                </Button>
-                <Button
-                  className="tag"
-                  onClick={() =>
-                    window.open(
-                      `https://explorer.solana.com/account/${art?.mint || ''}${
-                        env.indexOf('main') >= 0 ? '' : `?cluster=${env}`
-                      }`,
-                      '_blank',
-                    )
-                  }
-                >
-                  Solana
-                </Button>
-              </div>
+            <Col span={24} md={12}>
+              <h2 className="art-title auction-color">
+                {art.title || <Skeleton paragraph={{ rows: 0 }} />}
+              </h2>
+              <Row gutter={[50, 0]} style={{ marginRight: 'unset' }}>
+                <Col>
+                  <h6 className="auction-color">Edition</h6>
+                  {!auction && (
+                    <Skeleton title={{ width: '100%' }} paragraph={{ rows: 0 }} />
+                  )}
+                  {auction && (
+                    <p className="auction-art-edition auction-color">
+                      {(auction?.items.length || 0) > 1 ? 'Multiple' : edition}
+                    </p>
+                  )}
+                </Col>
+
+                <Col>
+                  <h6 className="auction-color">View on</h6>
+                  <div style={{ display: 'flex' }}>
+                    <Button
+                      className="tag"
+                      onClick={() => window.open(art.uri || '', '_blank')}
+                    >
+                      Arweave
+                    </Button>
+                    <Button
+                      className="tag"
+                      onClick={() =>
+                        window.open(
+                          `https://explorer.solana.com/account/${art?.mint || ''}${
+                            env.indexOf('main') >= 0 ? '' : `?cluster=${env}`
+                          }`,
+                          '_blank',
+                        )
+                      }
+                    >
+                      Solana
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
+
+              {!auction && <Skeleton paragraph={{ rows: 6 }} />}
+              {auction && <AuctionCard auctionView={auction} />}
+              {!auction?.isInstantSale && <AuctionBids auctionView={auction} />}
             </Col>
           </Row>
-
-          {!auction && <Skeleton paragraph={{ rows: 6 }} />}
-          {auction && <AuctionCard auctionView={auction} />}
-          {!auction?.isInstantSale && <AuctionBids auctionView={auction} />}
         </Col>
+        <Col span={2}></Col>
       </Row>
     </>
   );
@@ -332,19 +344,13 @@ const BidLine = (props: {
             address={bidder}
           />{' '}
           {bidderTwitterHandle ? (
-            <Row className="pubkey-row"> 
-              <a
-                target="_blank"
-                title={shortenAddress(bidder)}
-                href={`https://twitter.com/${bidderTwitterHandle}`}
-              >{`@${bidderTwitterHandle}`}</a>
-              <ClickToCopy className="copy-pubkey" copyText={bidder as string} />
-            </Row>
+            <a
+              target="_blank"
+              title={shortenAddress(bidder)}
+              href={`https://twitter.com/${bidderTwitterHandle}`}
+            >{`@${bidderTwitterHandle}`}</a>
           ) : (
-            <Row className="pubkey-row"> 
-              {shortenAddress(bidder)}
-              <ClickToCopy className="copy-pubkey" copyText={bidder as string} />
-            </Row>
+            shortenAddress(bidder)
           )}
           {isme && <span style={{ color: '#6479f6' }}>&nbsp;(you)</span>}
         </Row>
@@ -409,11 +415,11 @@ export const AuctionBids = ({
 
   return (
     <Col style={{ width: '100%' }}>
-      <h6>Bid History</h6>
-      {bidLines.slice(0, 10)}
+      <h6 className="auction-color">Bid History</h6>
+      <p>{bidLines.slice(0, 10)}</p>
       {bids.length > 10 && (
         <div
-          className="full-history"
+          className="full-history auction-color"
           onClick={() => setShowHistoryModal(true)}
           style={{
             cursor: 'pointer',
@@ -440,6 +446,7 @@ export const AuctionBids = ({
             overflowY: 'scroll',
             width: '100%',
           }}
+          className="auction-color"
         >
           {bidLines}
         </div>

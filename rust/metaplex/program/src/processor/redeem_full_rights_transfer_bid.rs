@@ -48,7 +48,6 @@ pub fn process_full_rights_transfer_bid<'a>(
     let transfer_authority_info = next_account_info(account_info_iter)?;
 
     let safety_deposit_config_info = next_account_info(account_info_iter).ok();
-    let auction_extended_info = next_account_info(account_info_iter).ok();
 
     let CommonRedeemReturn {
         auction_manager,
@@ -66,7 +65,6 @@ pub fn process_full_rights_transfer_bid<'a>(
         safety_deposit_info,
         vault_info,
         auction_info,
-        auction_extended_info,
         bidder_metadata_info,
         bidder_info,
         token_program_info,

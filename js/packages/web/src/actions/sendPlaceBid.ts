@@ -27,7 +27,7 @@ export async function sendPlaceBid(
   auctionView: AuctionView,
   accountsByMint: Map<string, TokenAccount>,
   // value entered by the user adjust to decimals of the mint
-  amount: number | BN,
+  amount: number,
 ) {
   const signers: Keypair[][] = [];
   const instructions: TransactionInstruction[][] = [];
@@ -62,8 +62,7 @@ export async function setupPlaceBid(
   auctionView: AuctionView,
   accountsByMint: Map<string, TokenAccount>,
   // value entered by the user adjust to decimals of the mint
-  // If BN, then assume instant sale and decimals already adjusted.
-  amount: number | BN,
+  amount: number,
   overallInstructions: TransactionInstruction[][],
   overallSigners: Keypair[][],
 ): Promise<BN> {
@@ -83,12 +82,7 @@ export async function setupPlaceBid(
   const mint = cache.get(
     tokenAccount ? tokenAccount.info.mint : QUOTE_MINT,
   ) as ParsedAccount<MintInfo>;
-
-  const lamports =
-    accountRentExempt +
-    (typeof amount === 'number'
-      ? toLamports(amount, mint.info)
-      : amount.toNumber());
+  const lamports = toLamports(amount, mint.info) + accountRentExempt;
 
   let bidderPotTokenAccount: string;
   if (!auctionView.myBidderPot) {

@@ -16,7 +16,6 @@ import {
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { notify } from '../utils/notifications';
 import { ExplorerLink } from '../components/ExplorerLink';
-import { useQuerySearch } from '../hooks';
 import {
   TokenInfo,
   TokenListProvider,
@@ -88,16 +87,10 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
 });
 
 export function ConnectionProvider({ children = undefined as any }) {
-  const searchParams = useQuerySearch();
-  const network = searchParams.get('network');
-  const queryEndpoint =
-    network && ENDPOINTS.find(({ name }) => name.startsWith(network))?.endpoint;
-
-  const [savedEndpoint, setEndpoint] = useLocalStorageState(
+  const [endpoint, setEndpoint] = useLocalStorageState(
     'connectionEndpoint',
     ENDPOINTS[0].endpoint,
   );
-  const endpoint = queryEndpoint || savedEndpoint;
 
   const connection = useMemo(
     () => new Connection(endpoint, 'recent'),

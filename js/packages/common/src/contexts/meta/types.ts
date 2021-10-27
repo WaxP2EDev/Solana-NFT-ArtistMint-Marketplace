@@ -71,18 +71,12 @@ export interface MetaState {
     ParsedAccount<WhitelistedCreator>
   >;
   payoutTickets: Record<string, ParsedAccount<PayoutTicket>>;
+  stores: Record<string, ParsedAccount<Store>>;
+  creators: Record<string, ParsedAccount<WhitelistedCreator>>;
 }
 
 export interface MetaContextState extends MetaState {
   isLoading: boolean;
-  update: (
-    auctionAddress?: any,
-    bidderAddress?: any,
-  ) => [
-    ParsedAccount<AuctionData>,
-    ParsedAccount<BidderPot>,
-    ParsedAccount<BidderMetadata>,
-  ];
 }
 
 export type AccountAndPubkey = {
@@ -90,19 +84,16 @@ export type AccountAndPubkey = {
   account: AccountInfo<Buffer>;
 };
 
-export type UpdateStateValueFunc<T = void> = (
+export type UpdateStateValueFunc = (
   prop: keyof MetaState,
   key: string,
   value: ParsedAccount<any>,
-) => T;
+) => void;
 
 export type ProcessAccountsFunc = (
   account: PublicKeyStringAndAccount<Buffer>,
   setter: UpdateStateValueFunc,
+  useAll: boolean,
 ) => void;
 
 export type CheckAccountFunc = (account: AccountInfo<Buffer>) => boolean;
-
-export type UnPromise<T extends Promise<any>> = T extends Promise<infer U>
-  ? U
-  : never;

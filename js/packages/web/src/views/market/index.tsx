@@ -1,8 +1,16 @@
-import {Col, Row, Layout, Input, Button, Checkbox, Slider, Select, Space, DatePicker, Image} from 'antd';
-import React from 'react';
+import {Col, Row, Tabs, Layout, Input, Button, Checkbox, Slider, Select, Space, DatePicker, Image} from 'antd';
+import React, { useEffect, useState} from 'react';
+import { ArtCard } from '../../components/ArtCard';
+import Masonry from 'react-masonry-css';
+import { useCreatorArts, useUserArts } from '../../hooks';
+import { useMeta } from '../../contexts';
+import { CardLoader } from '../../components/MyLoader';
+import { useWallet } from '@solana/wallet-adapter-react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
+import { AuctionMarketView } from '../auctionMarketView';
 
+const { TabPane } = Tabs;
 const { Content } = Layout;
 const {Option} = Select;
 
@@ -18,12 +26,122 @@ const images = [
   {items: ['./market/Rectangle2.svg', './market/Rectangle5.svg', './market/Rectangle8.svg']}
 ];
 
+const smoothScroll = function (targetEl, duration) {
+  let target = document.querySelector(targetEl);
+  let targetPosition = target.getBoundingClientRect().top - 0;
+  let startPosition = window.pageYOffset;
+  let startTime = null;
+
+  const ease = function(t,b,c,d) {
+      t /= d / 2;
+      if (t < 1) return c / 2 * t * t + b;
+      t--;
+      return -c / 2 * (t * (t - 2) - 1) + b;
+  };
+
+  const animation = function(currentTime){
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const run = ease(timeElapsed, startPosition, targetPosition, duration);
+      window.scrollTo(0,run);
+      if (timeElapsed < duration) requestAnimationFrame(animation);
+  };
+  requestAnimationFrame(animation);
+
+};
+
 function onChange(date, dateString) {
   console.log(date, dateString);
 }
 
-export const MarketView = () => 
-<Content>
+export enum MarketViewState {
+  Metaplex = '0',
+  Owned = '1',
+  Created = '2',
+}
+
+export const MarketView = () => {
+  const { connected, publicKey } = useWallet();
+  const ownedMetadata = useUserArts();
+  const createdMetadata = useCreatorArts(publicKey?.toBase58() || '');
+  const { metadata, isLoading } = useMeta();
+  const [activeKey, setActiveKey] = useState(MarketViewState.Metaplex);
+  const breakpointColumnsObj = {
+    default: 4,
+    1100: 3,
+    700: 2,
+    500: 1,
+  };
+
+  const items =
+    activeKey === MarketViewState.Owned
+      ? ownedMetadata.map(m => m.metadata)
+      : activeKey === MarketViewState.Created
+      ? createdMetadata
+      : metadata;
+
+  useEffect(() => {
+    if (connected) {
+      setActiveKey(MarketViewState.Owned);
+    } else {
+      setActiveKey(MarketViewState.Metaplex);
+    }
+  }, [connected, setActiveKey]);
+
+  
+
+  const artworkGrid = (
+    <Masonry
+      breakpointCols={breakpointColumnsObj}
+      className="my-masonry-grid"
+      columnClassName="my-masonry-grid_column"
+    >
+      {!isLoading
+        ? items.map((m, idx) => {
+            const id = m.pubkey;
+            return (
+              <Link to={`/art/${id}`} key={idx}>
+                <ArtCard
+                  key={id}
+                  pubkey={m.pubkey}
+                  preview={false}
+                  height={250}
+                  width={250}
+                />
+              </Link>
+            );
+          })
+        : [...Array(10)].map((_, idx) => <CardLoader key={idx} />)}
+    </Masonry>
+  );
+
+  const marketAllGrid = (
+    <Masonry
+      breakpointCols={breakpointColumnsObj}
+      className="my-masonry-grid"
+      columnClassName="my-masonry-grid_column"
+    >
+      {!isLoading
+        ? items.map((m, idx) => {
+            const id = m.pubkey;
+            return (
+              <Link to={`/marketall/${id}`} key={idx}>
+                <ArtCard
+                  key={id}
+                  pubkey={m.pubkey}
+                  preview={false}
+                  height={250}
+                  width={250}
+                />
+              </Link>
+            );
+          })
+        : [...Array(10)].map((_, idx) => <CardLoader key={idx} />)}
+    </Masonry>
+  );
+
+return (
+  <Content>
   <div style={{backgroundColor: '#F3F3F3'}} className="space_entire">
     <Row gutter={16}>
       <Col span={11} offset={3} className="gutter-row">
@@ -46,9 +164,18 @@ export const MarketView = () =>
     </Row>
   </div>
   <div className="little_space">
-    <Row gutter={16}>
+    <Row className="menu" gutter={16}>
       <Col span={5} className="gutter-row">
-        <h2>Artwork Details</h2>
+        <h2>Status</h2>
+        <Row gutter={20} style={{marginTop: '30px'}}>
+          <Col span={12}>
+            <Input type="button" onClick={ () => smoothScroll("#scroll", 1000)} defaultValue="Buy" className="subscribe market-button" readOnly />
+          </Col>
+          <Col span={12}>
+            <Input type="button" onClick={ () => smoothScroll("#scroll", 1000)} defaultValue="Auction" className="subscribe market-button" readOnly />
+          </Col>
+        </Row>
+        <h2 style={{marginTop: '30px'}}>Artwork Details</h2>
         {
           checkbox.map((item, index) =>
             <div key={index}>
@@ -101,7 +228,46 @@ export const MarketView = () =>
         </Row>
       </Col>
       <Col span={1}></Col>
-      {
+      <Col span={18} className="gutter-row">
+      <Layout style={{ margin: 0, marginTop: 30 }}>
+        <Content style={{ display: 'flex', flexWrap: 'wrap' }}>
+          <Col style={{ width: '100%', marginTop: 10 }}>
+            <Row>
+              <Tabs
+                activeKey={activeKey}
+                onTabClick={key => setActiveKey(key as MarketViewState)}
+              >
+                <TabPane
+                  tab={<span className="tab-title">All</span>}
+                  key={MarketViewState.Metaplex}
+                >
+                  {marketAllGrid}
+                </TabPane>
+                {connected && (
+                  <TabPane
+                    tab={<span className="tab-title">Owned</span>}
+                    key={MarketViewState.Owned}
+                  >
+                    {artworkGrid}
+                  </TabPane>
+                )}
+                {connected && (
+                  <TabPane
+                    tab={<span className="tab-title">Created</span>}
+                    key={MarketViewState.Created}
+                  >
+                    {artworkGrid}
+                  </TabPane>
+                )}
+              </Tabs>
+            </Row>
+          </Col>
+        </Content>
+      </Layout>
+      <br id="scroll" />
+      <AuctionMarketView />
+      </Col>
+      {/* {
         images.map((image, index) =>
           <Col span={6} className="gutter-row" key={index}>
             {
@@ -147,7 +313,11 @@ export const MarketView = () =>
             }
           </Col>
         )
-      }
+      } */}
     </Row>
   </div>
 </Content>
+);
+  
+};
+

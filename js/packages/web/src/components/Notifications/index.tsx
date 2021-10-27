@@ -182,7 +182,7 @@ export function useSettlementAuctions({
   const { accountByMint } = useUserAccounts();
   const walletPubkey = wallet?.publicKey?.toBase58();
   const { bidderPotsByAuctionAndBidder } = useMeta();
-  const auctionsNeedingSettling = [...useAuctions(AuctionViewState.Ended), ...useAuctions(AuctionViewState.BuyNow)];
+  const auctionsNeedingSettling = useAuctions(AuctionViewState.Ended);
 
   const [validDiscoveredEndedAuctions, setValidDiscoveredEndedAuctions] =
     useState<Record<string, number>>({});
@@ -190,13 +190,10 @@ export function useSettlementAuctions({
     const f = async () => {
       const nextBatch = auctionsNeedingSettling
         .filter(
-          a => {
-            const isEndedInstantSale = a.isInstantSale && a.items.length === a.auction.info.bidState.bids.length;
-
-           return walletPubkey &&
+          a =>
+            walletPubkey &&
             a.auctionManager.authority === walletPubkey &&
-             (a.auction.info.ended() || isEndedInstantSale)
-          }
+            a.auction.info.ended(),
         )
         .sort(
           (a, b) =>
@@ -216,12 +213,7 @@ export function useSettlementAuctions({
                 av.auction.info.bidState.bids
                   .map(b => b.amount.toNumber())
                   .reduce((acc, r) => (acc += r), 0) > 0) ||
-              // FIXME: Why 0.01? If this is used,
-              //        no auctions with lower prices (e.g. 0.0001) appear in notifications,
-              //        thus making settlement of such an auction impossible.
-              //        Temporarily making the number a lesser one.
-              // (balance.value.uiAmount || 0) > 0.01
-              (balance.value.uiAmount || 0) > 0.00001
+              (balance.value.uiAmount || 0) > 0.01
             ) {
               setValidDiscoveredEndedAuctions(old => ({
                 ...old,

@@ -9,4 +9,3 @@ export * from './strings';
 export * as shortvec from './shortvec';
 export * from './isValidHttpUrl';
 export * from './borsh';
-export * from './createPipelineExecutor';

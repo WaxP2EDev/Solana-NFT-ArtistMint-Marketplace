@@ -8,12 +8,14 @@
   "keywords": [],
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=14.17"
+    "node": ">=6.0.0"
   },
   "scripts": {
     "bootstrap": "lerna link && lerna bootstrap",
     "build": "lerna run build",
     "start": "cross-env CI=true lerna run start --scope @oyster/common --stream --parallel --scope web",
+    "server": "npm run serve --prefix packages/server",
+    "dev": "concurrently \"npm run start\" \"npm run server\"",
     "lint": "prettier -c 'packages/*/{src,test}/**/*.ts' && npm run lint:eslint",
     "lint:eslint": "eslint 'packages/*/{src,test}/**/*.ts'",
     "lint:fix": "prettier --write 'packages/*/{src,test}/**/*.{ts,tsx}' && eslint --fix 'packages/*/{src,test}/**/*.ts'",
@@ -28,9 +30,6 @@
       "prettier --write",
       "eslint --cache --fix --max-warnings=0"
     ]
-  },
-  "resolutions": {
-    "@types/react": "^17.0.16"
   },
   "husky": {
     "hooks": {
@@ -50,7 +49,6 @@
   },
   "dependencies": {
     "cross-env": "^7.0.3",
-    "moment": "^2.29.1",
     "next": "^11.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
@@ -63,11 +61,11 @@
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
     "eslint-plugin-react": "^7.25.1",
-    "eslint": "^7.11.0",
+    "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.15.0",
     "gh-pages": "^3.1.0",
     "husky": "^4.3.0",
-    "jest": "26.6.0",
+    "jest": "24.9.0",
     "jest-config": "24.9.0",
     "lerna": "3.22.1",
     "lint-staged": "^10.5.0",

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout } from 'antd';
+import { Layout, Button, Row, Col, Image } from 'antd';
 
 import { LABELS } from '../../constants';
 import { AppBar } from '../AppBar';
@@ -27,8 +27,8 @@ export const AppLayout = React.memo((props: any) => {
         <Content style={{ overflow: 'scroll'}}>
           {props.children}
         </Content>
+        <Footer />
       </Layout>
-      <Footer />
     </>
   );
 });

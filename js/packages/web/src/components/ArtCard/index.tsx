@@ -1,11 +1,12 @@
 import React from 'react';
-import { Card, CardProps, Button, Badge } from 'antd';
+import { Card, CardProps, Button, Badge, Row, Col } from 'antd';
 import { MetadataCategory, StringPublicKey } from '@oyster/common';
 import { ArtContent } from './../ArtContent';
 import { useArt } from '../../hooks';
 import { PublicKey } from '@solana/web3.js';
 import { Artist, ArtType } from '../../types';
 import { MetaAvatar } from '../MetaAvatar';
+import { HeartOutlined } from '@ant-design/icons';
 
 const { Meta } = Card;
 
@@ -95,19 +96,11 @@ export const ArtCard = (props: ArtCardProps) => {
         title={`${name}`}
         description={
           <>
-            <MetaAvatar creators={creators} size={32} />
-            {/* {art.type === ArtType.Master && (
-              <>
-                <br />
-                {!endAuctionAt && (
-                  <span style={{ padding: '24px' }}>
-                    {(art.maxSupply || 0) - (art.supply || 0)}/
-                    {art.maxSupply || 0} prints remaining
-                  </span>
-                )}
-              </>
-            )} */}
-            <div className="edition-badge">{badge}</div>
+            <MetaAvatar creators={creators} size={32} />  
+            <div className="edition-badge">
+              {badge}
+              <HeartOutlined className="favorite-icon" />
+            </div>
           </>
         }
       />

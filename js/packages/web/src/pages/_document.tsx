@@ -49,7 +49,9 @@ export default class MetaplexDocument extends Document {
             crossOrigin="anonymous"
           />
         </Head>
-        <body style={{backgroundColor: 'white'}}>
+        <body style={{
+          backgroundColor: 'white',
+        }}>
           <Main />
           <NextScript />
           <script

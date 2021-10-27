@@ -24,7 +24,7 @@ export interface AuctionCard extends CardProps {
 }
 
 export const AuctionRenderCard = (props: AuctionCard) => {
-  const { auctionView } = props;
+  let { auctionView } = props;
   const id = auctionView.thumbnail.metadata.pubkey;
   const art = useArt(id);
   const name = art?.title || ' ';
@@ -42,17 +42,13 @@ export const AuctionRenderCard = (props: AuctionCard) => {
   const isUpcoming = auctionView.state === AuctionViewState.Upcoming;
 
   const winningBid = useHighestBidForAuction(auctionView.auction.pubkey);
-  const ended = !auctionView.isInstantSale &&
+  const ended =
     state?.hours === 0 && state?.minutes === 0 && state?.seconds === 0;
 
   let currentBid: number | string = 0;
   let label = '';
   if (isUpcoming || bids) {
-    label = ended
-      ? 'Ended'
-      : auctionView.isInstantSale
-      ? 'Price'
-      : 'Starting bid';
+    label = ended ? 'Ended' : 'Starting bid';
     currentBid = fromLamports(
       participationOnly ? participationFixedPrice : priceFloor,
       mintInfo,
@@ -100,7 +96,7 @@ export const AuctionRenderCard = (props: AuctionCard) => {
         title={`${name}`}
         description={
           <>
-            <h4 style={{ marginBottom: 0 }}>{label}</h4>
+            <h4 className="cd-time" style={{ marginBottom: 0 }}>{label}</h4>
             <div className="bids">
               <AmountLabel
                 style={{ marginBottom: 10 }}

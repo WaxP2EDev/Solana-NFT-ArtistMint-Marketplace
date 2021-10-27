@@ -189,13 +189,7 @@ pub fn process_update_metadata_accounts(
 
     if let Some(data) = optional_data {
         if metadata.is_mutable {
-            assert_data_valid(
-                &data,
-                update_authority_info.key,
-                &metadata,
-                false,
-                update_authority_info.is_signer,
-            )?;
+            assert_data_valid(&data, update_authority_info.key, &metadata, false)?;
             metadata.data = data;
         } else {
             return Err(MetadataError::DataIsImmutable.into());

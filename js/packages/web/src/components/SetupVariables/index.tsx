@@ -36,7 +36,7 @@ export const SetupVariables: FC<Variables> = ({
         ></Button>
       }
     >
-      <div ref={ref}>
+      <div style={{background:'white'}} ref={ref}>
         {storeOwnerAddress && <p>STORE_OWNER_ADDRESS={storeOwnerAddress}</p>}
         {storeAddress && <p>STORE_ADDRESS={storeAddress}</p>}
       </div>

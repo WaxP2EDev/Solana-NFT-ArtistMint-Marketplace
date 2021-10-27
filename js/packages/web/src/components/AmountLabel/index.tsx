@@ -36,14 +36,14 @@ export const AmountLabel = (props: IAmountLabel) => {
       {PriceNaN === false && (
         <Statistic
           style={style}
-          className="create-statistic"
+          className="create-statistic custom-color"
           title={title || ''}
           value={amount}
           prefix="◎"
         />
       )}
       {displayUSD && (
-        <div className="usd">
+        <div className="usd" style={{color: 'black'}}>
           {PriceNaN === false ? (
             formatUSD.format(priceUSD || 0)
           ) : (

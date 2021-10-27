@@ -9,10 +9,14 @@ import {
   ArtsView,
   ArtworksView,
   AuctionCreateView,
+  OfferCreateView,
   AuctionView,
   HomeView,
   MarketView,
+  MarketAllView,
   PhotoView,
+  SignInView,
+  CreateView,
 } from './views';
 import { AdminView } from './views/admin';
 import { BillingView } from './views/auction/billing';
@@ -24,17 +28,18 @@ export function Routes() {
         <Providers>
           <Switch>
             <Route exact path="/admin" component={() => <AdminView />} />
-            <Route
+            {/* <Route
               exact
               path="/market"
               component={() => <MarketView />}
-            />
-            <Route 
+            /> */}
+            
+            <Route
               exact
               path="/arts"
               component={() => <ArtsView />}
             />
-            <Route 
+            <Route
               exact
               path="/photography"
               component={() => <PhotoView />}
@@ -46,6 +51,11 @@ export function Routes() {
             />
             <Route
               exact
+              path="/create"
+              component={() => <CreateView />}
+            />
+            <Route
+              exact
               path="/art/create/:step_param?"
               component={() => <ArtCreateView />}
             />
@@ -54,13 +64,25 @@ export function Routes() {
               path="/artworks/:id?"
               component={() => <ArtworksView />}
             />
+            <Route
+              exact
+              path="/market/:id?"
+              component={() => <MarketView />}
+            />
             <Route exact path="/art/:id" component={() => <ArtView />} />
+            <Route exact path="/marketall/:id" component={() => <MarketAllView />} />
             <Route exact path="/artists/:id" component={() => <ArtistView />} />
             <Route exact path="/artists" component={() => <ArtistsView />} />
+            <Route exact path="/signin" component={() => <SignInView />} />
             <Route
               exact
               path="/auction/create/:step_param?"
               component={() => <AuctionCreateView />}
+            />
+            <Route
+              exact
+              path="/offer/create/:step_param?"
+              component={() => <OfferCreateView />}
             />
             <Route
               exact

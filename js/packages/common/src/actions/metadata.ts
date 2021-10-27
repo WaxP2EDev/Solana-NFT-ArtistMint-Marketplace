@@ -1,5 +1,4 @@
 import {
-  PublicKey,
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
@@ -250,27 +249,13 @@ export class Metadata {
     this.data = args.data;
     this.primarySaleHappened = args.primarySaleHappened;
     this.isMutable = args.isMutable;
-    this.editionNonce = args.editionNonce ?? null;
+    this.editionNonce = args.editionNonce;
   }
 
   public async init() {
-    const metadata = toPublicKey(programIds().metadata);
-    if (this.editionNonce !== null) {
-      this.edition = (
-        await PublicKey.createProgramAddress(
-          [
-            Buffer.from(METADATA_PREFIX),
-            metadata.toBuffer(),
-            toPublicKey(this.mint).toBuffer(),
-            new Uint8Array([this.editionNonce || 0]),
-          ],
-          metadata,
-        )
-      ).toBase58();
-    } else {
-      this.edition = await getEdition(this.mint);
-    }
-    this.masterEdition = this.edition;
+    const edition = await getEdition(this.mint);
+    this.edition = edition;
+    this.masterEdition = edition;
   }
 }
 
